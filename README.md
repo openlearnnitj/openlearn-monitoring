@@ -2,32 +2,16 @@
 
 A production-ready monitoring system that tracks the health of OpenLearn's API services and displays a beautiful status page inspired by modern SaaS companies like Anthropic.
 
-## 🏗️ Architecture
 
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   AWS Lambda    │    │    DynamoDB      │    │  Status Page    │
-│  (Monitoring)   │───▶│   (Storage)      │◀───│   (Display)     │
-│  Runs every     │    │                  │    │   Fiber Web     │
-│  60 seconds     │    │                  │    │   Server        │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                                              │
-         ▼                                              ▼
-┌─────────────────┐                            ┌─────────────────┐
-│  OpenLearn API  │                            │     Users       │
-│ Health Endpoint │                            │ status.domain   │
-└─────────────────┘                            └─────────────────┘
-```
+## Features
 
-## ✨ Features
-
-- **🔄 Automated Monitoring**: AWS Lambda function runs every 60 seconds
-- **⚡ Concurrent Processing**: Parallel DynamoDB writes using goroutines
-- **📊 Beautiful Status Page**: Modern UI inspired by Anthropic's design
-- **📈 Uptime Tracking**: 24h, 7d, and 30d uptime statistics
-- **📱 Responsive Design**: Works perfectly on mobile and desktop
-- **🎨 Visual History**: 90-day status history with color-coded bars
-- **🔧 Easy Deployment**: Multiple deployment options (Lambda, Container, Binary)
+- **Automated Monitoring**: AWS Lambda function runs every 60 seconds
+- **Concurrent Processing**: Parallel DynamoDB writes using goroutines
+- **Beautiful Status Page**: Modern UI inspired by Anthropic's design
+- **Uptime Tracking**: 24h, 7d, and 30d uptime statistics
+- **Responsive Design**: Works perfectly on mobile and desktop
+- **Visual History**: 90-day status history with color-coded bars
+- **Easy Deployment**: Multiple deployment options (Lambda, Container, Binary)
 
 ## Environment Variables
 
