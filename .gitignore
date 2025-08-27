@@ -1,0 +1,6 @@
+.env
+dev.sh
+lambda
+*.zip
+response.json
+lambda-env.json

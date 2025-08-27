@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenLearn Status</title>
+    <link rel="icon" type="image/png" href="https://avatars.githubusercontent.com/u/208047818?s=400&u=dfc76ca68211e1f2251c63e57982bae0855edec8&v=4">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .title-section h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .title-section p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .last-updated {
+            color: #718096;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .overall-status {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .overall-status.operational {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+        }
+
+        .overall-status.degraded {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            border: none;
+        }
+
+        .overall-status h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .overall-status p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .components-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1a202c;
+        }
+
+        .component {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .component:last-child {
+            border-bottom: none;
+        }
+
+        .component-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .component-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .component-details {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .component-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-operational {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-degraded {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-down {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .uptime-section {
+            margin-top: 40px;
+        }
+
+        .uptime-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1a202c;
+        }
+
+        .uptime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .uptime-card {
+            text-align: center;
+            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .uptime-percentage {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .uptime-percentage.high {
+            color: #38a169;
+        }
+
+        .uptime-percentage.medium {
+            color: #ed8936;
+        }
+
+        .uptime-percentage.low {
+            color: #e53e3e;
+        }
+
+        .uptime-period {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .status-history {
+            margin-top: 32px;
+        }
+
+        .status-history h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a202c;
+        }
+
+        .history-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .history-bar {
+            display: flex;
+            height: 32px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+
+        .history-day {
+            flex: 1;
+            min-width: 2px;
+            transition: all 0.2s;
+        }
+
+        .history-day.operational {
+            background: #48bb78;
+        }
+
+        .history-day.degraded {
+            background: #ed8936;
+        }
+
+        .history-day.down {
+            background: #f56565;
+        }
+
+        .history-day:hover {
+            transform: scaleY(1.1);
+            z-index: 1;
+            position: relative;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .component {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .component-status {
+                align-self: flex-end;
+            }
+
+            .uptime-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.active {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #4299e1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="https://avatars.githubusercontent.com/u/208047818?s=400&u=dfc76ca68211e1f2251c63e57982bae0855edec8&v=4" alt="OpenLearn Logo" onerror="this.style.display='none'; this.parentNode.innerHTML='OL';">
+                </div>
+                <div class="title-section">
+                    <h1>OpenLearn Status</h1>
+                    <p>System health and uptime</p>
+                </div>
+            </div>
+            <div class="last-updated">
+                <span>Last updated: {{.LastUpdated.Format "3:04 PM MST"}}</span>
+                <button class="refresh-btn" onclick="refreshStatus()">
+                    <span class="loading"></span>
+                    <span class="refresh-text">Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="status-card overall-status {{if eq .OverallStatus "OPERATIONAL"}}operational{{else}}degraded{{end}}">
+                <h2>{{if eq .OverallStatus "OPERATIONAL"}}All Systems Operational{{else}}System Issues Detected{{end}}</h2>
+                <p>{{if eq .OverallStatus "OPERATIONAL"}}Everything is running smoothly.{{else}}Some services are experiencing issues.{{end}}</p>
+            </div>
+
+            <div class="status-card">
+                <div class="components-section">
+                    <h3>Component Status</h3>
+                    {{range .Components}}
+                    <div class="component">
+                        <div class="component-info">
+                            <div class="component-name">{{.Name}}</div>
+                            <div class="component-details">
+                                Avg. Response: {{printf "%.0f" .InternalResponseTimeMs}}ms
+                                {{if gt .TotalResponseTimeMs 0}}• Total: {{.TotalResponseTimeMs}}ms{{end}}
+                            </div>
+                        </div>
+                        <div class="component-status">
+                            <span class="status-badge status-{{.Status | lower}}">{{.Status}}</span>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="uptime-section">
+                    <h3>Uptime Summary</h3>
+                    <div class="uptime-grid">
+                        <div class="uptime-card">
+                            <div class="uptime-percentage {{if ge .UptimeStats.Last24Hours 99.5}}high{{else if ge .UptimeStats.Last24Hours 95}}medium{{else}}low{{end}}">
+                                {{printf "%.2f" .UptimeStats.Last24Hours}}%
+                            </div>
+                            <div class="uptime-period">Last 24 Hours</div>
+                        </div>
+                        <div class="uptime-card">
+                            <div class="uptime-percentage {{if ge .UptimeStats.Last7Days 99.5}}high{{else if ge .UptimeStats.Last7Days 95}}medium{{else}}low{{end}}">
+                                {{printf "%.2f" .UptimeStats.Last7Days}}%
+                            </div>
+                            <div class="uptime-period">Last 7 Days</div>
+                        </div>
+                        <div class="uptime-card">
+                            <div class="uptime-percentage {{if ge .UptimeStats.Last30Days 99.5}}high{{else if ge .UptimeStats.Last30Days 95}}medium{{else}}low{{end}}">
+                                {{printf "%.2f" .UptimeStats.Last30Days}}%
+                            </div>
+                            <div class="uptime-period">Last 30 Days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-history">
+                    <h4>Uptime over the past 90 days</h4>
+                    {{range .Components}}
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 600; color: #1a202c;">{{.Name}}</span>
+                            <span style="font-size: 12px; color: #718096;">{{printf "%.2f" .UptimePercent}}% uptime</span>
+                        </div>
+                        <div class="history-timeline">
+                            <span>90 days ago</span>
+                            <span>Today</span>
+                        </div>
+                        <div class="history-bar">
+                            {{range .StatusHistory}}
+                            <div class="history-day {{.Status | lower}}" title="{{.Timestamp.Format "Jan 2, 2006"}}: {{.Status}}"></div>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Powered by <a href="https://openlearn.org.in" target="_blank">OpenLearn</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function refreshStatus() {
+            const loading = document.querySelector('.loading');
+            const text = document.querySelector('.refresh-text');
+            
+            loading.classList.add('active');
+            text.textContent = 'Loading...';
+            
+            // Reload the page
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            window.location.reload();
+        }, 60000);
+
+        // Add template function for lowercase
+        function lower(str) {
+            return str.toLowerCase();
+        }
+    </script>
+</body>
+</html>

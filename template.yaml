@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: OpenLearn Monitoring Service
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: provided.al2
+    Architectures:
+      - x86_64
+
+Parameters:
+  MonitoringAPIURL:
+    Type: String
+    Description: URL to the monitoring API endpoint
+    Default: https://api.openlearn.org.in/api/monitoring/health-status
+  
+  MonitoringAPISecret:
+    Type: String
+    Description: API secret for authentication
+    NoEcho: true
+  
+  DynamoDBTableName:
+    Type: String
+    Description: DynamoDB table name for storing monitoring data
+    Default: OpenLearnStatus
+  
+  MonitoringSchedule:
+    Type: String
+    Description: CloudWatch Events schedule expression
+    Default: "rate(1 minute)"
+
+Resources:
+  # DynamoDB Table
+  MonitoringTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: serviceName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: serviceName
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: OpenLearn-Monitoring
+
+  # Lambda Execution Role
+  MonitoringLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                Resource: !GetAtt MonitoringTable.Arn
+
+  # Lambda Function
+  MonitoringFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: openlearn-monitoring
+      CodeUri: cmd/lambda/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Architectures:
+        - x86_64
+      Role: !GetAtt MonitoringLambdaRole.Arn
+      Environment:
+        Variables:
+          MONITORING_API_URL: !Ref MonitoringAPIURL
+          MONITORING_API_SECRET: !Ref MonitoringAPISecret
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
+          AWS_REGION: !Ref AWS::Region
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: !Ref MonitoringSchedule
+            Enabled: true
+
+  # CloudWatch Log Group
+  MonitoringLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${MonitoringFunction}'
+      RetentionInDays: 30
+
+Outputs:
+  MonitoringFunctionArn:
+    Description: ARN of the monitoring Lambda function
+    Value: !GetAtt MonitoringFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-MonitoringFunctionArn'
+  
+  DynamoDBTableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref MonitoringTable
+    Export:
+      Name: !Sub '${AWS::StackName}-DynamoDBTableName'
+  
+  DynamoDBTableArn:
+    Description: ARN of the DynamoDB table
+    Value: !GetAtt MonitoringTable.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-DynamoDBTableArn'
